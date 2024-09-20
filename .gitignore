@@ -42,7 +42,6 @@ coverage.xml
 *.pkl
 
 # Ignore data directory contents
-data/*
 !data/.gitkeep   # Keep the folder but ignore its contents
 
 # Ignore models directory contents
@@ -58,3 +57,6 @@ models/*
 
 # Windows files
 Thumbs.db
+
+# Streamit
+.streamlit/*

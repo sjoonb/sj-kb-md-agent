@@ -1,4 +1,4 @@
 streamlit
 openai
-langchain
-langchain-openai
+llama-index
+nltk
