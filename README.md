@@ -12,12 +12,12 @@
 
 ### Create and Activate Virtual Environment
 
-1. Create the virtual environment:
+1. venv를 생성합니다:
    ```bash
    python3 -m venv env
    ```
 
-2. Activate the virtual environment:
+2. venv를 활성화합니다:
 
    - On macOS/Linux:
      ```bash
@@ -29,7 +29,7 @@
      .\env\Scripts\activate
      ```
 
-3. Install dependencies:
+3. dependencies를 설치합니다:
    ```bash
    pip install -r requirements.txt
    ```
