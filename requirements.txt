@@ -1,4 +1,7 @@
+colorama
 streamlit
 openai
 llama-index
 nltk
+ragas
+langchain

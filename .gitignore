@@ -60,3 +60,5 @@ Thumbs.db
 
 # Streamit
 .streamlit/*
+
+rag_test_result.html
