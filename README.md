@@ -1,9 +1,9 @@
-# kakaobank-ai
+# sj-kb-md-agent
 
 ## Quick Demo
 
 ### Demo URL
-https://sjoonb-kakaobank-ai.streamlit.app/
+[TBU]
 
 ## Setup and Installation
 
