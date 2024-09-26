@@ -10,6 +10,7 @@
 ### Requirements
 - Python 3.8+
 
+
 ### Create and Activate Virtual Environment
 
 1. venv를 생성합니다:
@@ -32,6 +33,23 @@
 3. dependencies를 설치합니다:
    ```bash
    pip install -r requirements.txt
+   ```
+
+
+### OpenAI API Key 설정
+
+RAG 시스템의 Generation 단계와, 시스템 성능 평가 과정에서 OpenAI의 모델을 활용합니다. 이에 따라 프로젝트에 다음과 같이 키를 저장해야 합니다.
+
+1. .streamlit/secrets.toml 파일을 생성하고, OpenAI API Key를 설정합니다.
+
+   ```tom
+   openai_key = "YOUR_OPEN_AI_API_KEY"
+   ```
+
+2. 환경변수에 OpenAI API Key를 설정합니다.
+
+   ```bash
+   EXPORT OPENAI_API_KEY=YOUR_OPEN_AI_API_KEY
    ```
 
 ### Run the Application
@@ -57,7 +75,7 @@ streamlit run streamlit_app.py
 
 요구사항을 바탕으로 1차적으로 Claude 의 프로젝트 기능을 활용해 답변을 생성한 후, 문서를 살펴보며 적절한 답변예시를 작성하였습니다. 
 
-자세한 내용은 [Golden Dataset](./test/golden_dataset.yaml) 를 확인해주세요.
+자세한 데이터 내용은 [Golden Dataset](./test/golden_dataset.yaml) 를 확인해주세요.
 
 ### Run Test
 
