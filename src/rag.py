@@ -5,8 +5,10 @@ import yaml
 import logging
 from llama_index.core import (PromptTemplate, Settings, SimpleDirectoryReader,
                               StorageContext, VectorStoreIndex,
-                              load_index_from_storage)
-from llama_index.core.base.base_query_engine import BaseQueryEngine
+                              load_index_from_storage, get_response_synthesizer)
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.schema import Document
 from llama_index.llms.openai import OpenAI
 
@@ -28,6 +30,7 @@ class RAGSystem:
         logger.info("Initializing RAG System...")
         self._initialize_llm()
         self._load_or_build_index()
+        self._create_retriever()
         self._create_query_engine()
         logger.info("RAG System initialization complete.")
 
@@ -37,6 +40,23 @@ class RAGSystem:
             raise ValueError("RAG System not initialized. Call initialize() first.")
         logger.info(f"Querying RAG System with prompt: {prompt[:50]}...")  # Log first 50 chars of prompt for brevity
         response = self.query_engine.query(prompt)
+
+        source_nodes = response.source_nodes
+        for node_with_score in source_nodes:
+            node = node_with_score.node
+            metadata = node.metadata
+            text_content = node.text
+            
+            # Print metadata
+            print("Document Metadata:")
+            for key, value in metadata.items():
+                print(f"{key}: {value}")
+            
+            # Print a snippet of the document's content
+            print("\nDocument Content Snippet:")
+            print(text_content[:500])  # Print the first 500 characters of the content
+            print() 
+
         logger.info("Query completed successfully.")
         return response
 
@@ -82,9 +102,22 @@ class RAGSystem:
         self.index.storage_context.persist(self.index_dir)
         logger.info("Index stored successfully.")
 
+    def _create_retriever(self):
+        logger.info("Creating retriever...")
+        self. retriever = VectorIndexRetriever(
+            index=self.index,
+            similarity_top_k=10,
+        )
+    
     def _create_query_engine(self):
-        logger.info("Creating query engine...")
-        self.query_engine = self.index.as_query_engine(llm=None, verbose=True)
+        # assemble query engine
+        self.query_engine = RetrieverQueryEngine(
+            retriever=self.retriever,
+            response_synthesizer=get_response_synthesizer(),
+            node_postprocessors=[SimilarityPostprocessor(similarity_cutoff=0.7)],
+        )
+
+        # self.query_engine = self.index.as_query_engine(llm=None, verbose=True)
         self.query_engine.update_prompts(
             {"response_synthesizer:text_qa_template": self._load_prompt_template("prompt_template.yaml")}
         )
