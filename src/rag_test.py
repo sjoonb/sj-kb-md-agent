@@ -5,9 +5,7 @@ from llama_index.llms.openai import OpenAI
 from ragas.integrations.llama_index import evaluate
 from ragas.metrics import answer_correctness
 from colorama import Fore, init # type: ignore
-
-from rag import (build_index, create_query_engine, initialize_llm,
-                 load_documents)
+from rag import RAGSystem
 
 # Initialize colorama
 init(autoreset=True)
@@ -25,11 +23,15 @@ def load_test_dataset(file_path):
     }
     return data_samples
 
+# Function to get prompts from the query engine
+def get_prompts(query_engine):
+    return query_engine.get_prompts()
+
 # Print current prompts
 def print_prompt_dict(prompts_dict):
     print("[TEST] Current prompts:")
     for k, p in prompts_dict.items():
-        prompt_text = f"Prompt Key{k}" f"Text:"
+        prompt_text = f"Prompt Key: {k}\nText:"
         print(prompt_text)
         print(p.get_template())
         print("")
@@ -40,7 +42,6 @@ def evaluate_results(df, threshold):
     """
     print("\n--- Test Results ---\n")
     print(f"Threshold for Answer Correctness: " + Fore.GREEN + f"{threshold:.2f}\n")
-
     for idx, row in df.iterrows():
         print(f"Test Case {idx + 1}:")
         print(f"Question: {row['question']}")
@@ -60,20 +61,15 @@ def test_rag_system():
     """
     Test the RAG system by generating a response and evaluating it.
     """
+    # Initialize RAG System
+    rag_system = RAGSystem(input_dir="./data")
+    rag_system.initialize()
 
-    # Initialize LLM
-    initialize_llm()
+    # Get and print prompts
+    prompts = get_prompts(rag_system.query_engine)
+    print_prompt_dict(prompts)
 
-    # Load documents and create index
-    docs = load_documents(input_dir="./data")
-    index = build_index(docs)
-
-    # Create chat engine
-    query_engine = create_query_engine(index)
-    print_prompt_dict(query_engine.get_prompts())
-
-    metrics = [ answer_correctness ]
-
+    metrics = [answer_correctness]
     evaluator_llm = OpenAI(model="gpt-4o-mini")
 
     # Load the test dataset from the YAML file
@@ -84,7 +80,7 @@ def test_rag_system():
 
     # Evaluate the test data using the RAG system
     result = evaluate(
-        query_engine=query_engine,
+        query_engine=rag_system.query_engine,
         metrics=metrics,
         dataset=dataset,
         llm=evaluator_llm,
