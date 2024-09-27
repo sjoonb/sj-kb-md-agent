@@ -1,22 +1,24 @@
-# rag_system.py
-
-from typing import Sequence
-import yaml
 import logging
+from typing import Sequence
+
+import yaml
 from llama_index.core import (PromptTemplate, Settings, SimpleDirectoryReader,
                               StorageContext, VectorStoreIndex,
-                              load_index_from_storage, get_response_synthesizer)
-from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.core.query_engine import RetrieverQueryEngine
+                              get_response_synthesizer,
+                              load_index_from_storage)
 from llama_index.core.postprocessor import SimilarityPostprocessor
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.schema import Document
 from llama_index.llms.openai import OpenAI
+
+from src.rag.interfaces import IRAG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-class RAGSystem:
+class LlamaIndexRAGImpl(IRAG):
     def __init__(self, input_dir="./data", index_dir="./index", model_name="gpt-3.5-turbo", temperature=0.5):
         self.input_dir = input_dir
         self.index_dir = index_dir
@@ -24,7 +26,7 @@ class RAGSystem:
         self.temperature = temperature
         self.index = None
         self.query_engine = None
-        logger.info(f"RAGSystem initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}, temperature={temperature}")
+        logger.info(f"RAG initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}, temperature={temperature}")
 
     def initialize(self):
         logger.info("Initializing RAG System...")
@@ -58,7 +60,7 @@ class RAGSystem:
             print() 
 
         logger.info("Query completed successfully.")
-        return response
+        return response.response
 
     def _initialize_llm(self):
         logger.info(f"Initializing LLM with model={self.model_name}, temperature={self.temperature}")
@@ -121,6 +123,15 @@ class RAGSystem:
         self.query_engine.update_prompts(
             {"response_synthesizer:text_qa_template": self._load_prompt_template("prompt_template.yaml")}
         )
+
+        # print updated prompt
+        prompts = self.query_engine.get_prompts()
+        for k, p in prompts.items():
+            prompt_text = f"Prompt Key: {k}\nText:"
+            print(prompt_text)
+            print(p.get_template())
+            print("")
+
         logger.info("Query engine created successfully.")
 
     def _load_prompt_template(self, file_path: str) -> PromptTemplate:

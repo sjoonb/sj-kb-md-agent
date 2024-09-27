@@ -5,3 +5,4 @@ llama-index
 nltk
 ragas
 langchain
+llama-index-llms-langchain
