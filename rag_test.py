@@ -51,9 +51,11 @@ def test_rag(rag: IRAG):
     """
     Test the LlamaIndex-based RAG system by generating a response and evaluating it.
     """
-    # Initialize LlamaIndex RAG System
-    rag.initialize()
+    # Print which implementation is being tested of rag
+    print("-" * 50)
+    print(f"Testing {rag.__class__.__name__}...\n")
 
+    # Initialize LlamaIndex RAG System
     metrics = [answer_correctness]
     critic_llm = ChatOpenAI(model="gpt-4o")
 
@@ -73,5 +75,6 @@ def test_rag(rag: IRAG):
     evaluate_results(result.to_pandas(), ANSWER_CORRECTNESS_THRESHOLD)
 
 if __name__ == "__main__":
-    # test_rag(rag=LlamaIndexRAGImpl())
-    test_rag(rag=LlmRetreivalRAGImpl())
+    rag_implementations = [LlamaIndexRAGImpl(), LlmRetreivalRAGImpl()]
+    for rag_impl in rag_implementations:
+        test_rag(rag=rag_impl)

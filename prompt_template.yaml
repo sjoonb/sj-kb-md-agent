@@ -1,4 +1,4 @@
-mydata_prompt:
+llamaindex_prompt:
   template: |
     아래는 마이데이터 정책과 기술 사양을 설명하는 공식 문서의 내용입니다.
     ---------------------
@@ -11,3 +11,10 @@ mydata_prompt:
 
     질문: {query_str}
     답변:
+
+llm_retrieval_prompt:
+  template: |
+    Based on the following document, answer this question: {query}
+
+    Document:
+    {document}

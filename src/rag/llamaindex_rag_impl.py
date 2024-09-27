@@ -19,16 +19,17 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class LlamaIndexRAGImpl(IRAG):
-    def __init__(self, input_dir="./data", index_dir="./index", model_name="gpt-3.5-turbo", temperature=0.5):
+    def __init__(self, input_dir="./data", index_dir="./index", model_name="gpt-3.5-turbo"):
         self.input_dir = input_dir
         self.index_dir = index_dir
         self.model_name = model_name
-        self.temperature = temperature
         self.index = None
         self.query_engine = None
-        logger.info(f"RAG initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}, temperature={temperature}")
+        logger.info(f"RAG initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}")
 
-    def initialize(self):
+        self._initialize_rag()
+
+    def _initialize_rag(self):
         logger.info("Initializing RAG System...")
         self._initialize_llm()
         self._load_or_build_index()
@@ -63,8 +64,8 @@ class LlamaIndexRAGImpl(IRAG):
         return response.response
 
     def _initialize_llm(self):
-        logger.info(f"Initializing LLM with model={self.model_name}, temperature={self.temperature}")
-        Settings.llm = OpenAI(model=self.model_name, temperature=self.temperature)
+        logger.info(f"Initializing LLM with model={self.model_name}")
+        Settings.llm = OpenAI(model=self.model_name)
         logger.info("LLM initialization complete.")
 
     def _load_documents(self):
@@ -121,7 +122,9 @@ class LlamaIndexRAGImpl(IRAG):
 
         # self.query_engine = self.index.as_query_engine(llm=None, verbose=True)
         self.query_engine.update_prompts(
-            {"response_synthesizer:text_qa_template": self._load_prompt_template("prompt_template.yaml")}
+            {"response_synthesizer:text_qa_template":
+              PromptTemplate(self._load_prompt_template('llamaindex_prompt'))
+            }
         )
 
         # print updated prompt
@@ -133,11 +136,3 @@ class LlamaIndexRAGImpl(IRAG):
             print("")
 
         logger.info("Query engine created successfully.")
-
-    def _load_prompt_template(self, file_path: str) -> PromptTemplate:
-        logger.info(f"Loading prompt template from {file_path}")
-        with open(file_path, 'r', encoding='utf-8') as file:
-            data = yaml.safe_load(file)
-        prompt_template_str = data['mydata_prompt']['template']
-        logger.info("Prompt template loaded successfully.")
-        return PromptTemplate(prompt_template_str)
