@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import xml.etree.ElementTree as ET
@@ -16,7 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 _LLM_RETRIEVER_RAG_DOCS_DIR = "./src/rag/llm_retriever_rag_resource/docs"
-_FAQ_DATA_PATH = "./src/rag/llm_retriever_rag_resource/faqs/마이데이터 기술 가이드라인_6_Q&A.md"
+_FAQ_DATA_PATH = "./src/rag/llm_retriever_rag_resource/faqs/faqs.json"
 
 class LlmRetrieverRAGImpl(IRAG):
     def query(self, query: str):
@@ -36,10 +37,22 @@ class LlmRetrieverRAGImpl(IRAG):
         return response.content
     
     def __init__(self):
+        self._load_faq_data()
         self._initialize_faq_chain()
         self._initialize_retrieval_chain()
         self._initialize_generation_chain()
-        self._load_faq_data()
+    
+    def _load_faq_data(self):
+        with open(_FAQ_DATA_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        self.faq_data = []
+        for section in data['faqs']:
+            for qa in section['questions']:
+                self.faq_data.append({
+                    "question": qa['question'],
+                    "answer": qa['answer']
+                })
 
     def _initialize_faq_chain(self):
         self.faq_prompt = PromptTemplate(
@@ -49,28 +62,20 @@ class LlmRetrieverRAGImpl(IRAG):
         self.faq_chain = (
             {
                 "query": RunnablePassthrough(),
-                "faq_list": lambda _: self.faq_data
+                "indexed_questions": lambda x: self._prepare_indexed_questions()
             }
             | self.faq_prompt
             | ChatOpenAI(temperature=0, model="gpt-4o")
             | self._parse_faq_response
         )
 
-    def _load_faq_data(self):
-        with open(_FAQ_DATA_PATH, 'r', encoding='utf-8') as f:
-            content = f.read()
+    def _prepare_indexed_questions(self):
+        return [{"index": i, "question": qa["question"]} for i, qa in enumerate(self.faq_data)]
         
-        # Split the content into FAQ entries
-        faq_entries = re.split(r'\n(?=# )', content)
-        
-        # Process each entry into a structured format
-        self.faq_data = []
-        for entry in faq_entries:
-            lines = entry.strip().split('\n')
-            if lines and lines[0].startswith('# '):
-                question = lines[0][2:].strip()
-                answer = '\n'.join(lines[1:]).strip()
-                self.faq_data.append({"question": question, "answer": answer})
+    def _get_faq_answer_by_index(self, index):
+        if 0 <= index < len(self.faq_data):
+            return self.faq_data[index]['answer']
+        return None
 
     def _search_faq(self, query):
         result = self.faq_chain.invoke({"query": query})
@@ -78,15 +83,28 @@ class LlmRetrieverRAGImpl(IRAG):
         return result
 
     def _parse_faq_response(self, response):
+        logger.info(f"Raw FAQ LLM response\n: {response.content}")
         try:
             root = ET.fromstring(response.content.strip())
+            match_found = root.find("match_found").text.lower() == "true"
+            reasoning = root.find("reasoning").text.strip()
+            index_element = root.find("index")
+            
+            if match_found and index_element is not None:
+                index = int(index_element.text)
+                content = self.faq_data[index]["answer"] if 0 <= index < len(self.faq_data) else None
+            else:
+                content = None
+
             return {
-                "match_found": root.find("match_found").text.lower() == "true",
-                "reasoning": root.find("reasoning").text.strip(),
-                "content": root.find("content").text.strip() if root.find("content").text else None
+                "match_found": match_found,
+                "reasoning": reasoning,
+                "content": content
             }
         except ET.ParseError as e:
             logger.error(f"FAQ LLM 응답 파싱 중 오류 발생: {e}")
+            logger.error(f"Raw response: {response.content}")  # Add this line
+
             return {"match_found": False, "reasoning": "LLM 응답 파싱 중 오류 발생", "content": None}
 
     def _generate_feedback_response(self, feedback: dict) -> str:
