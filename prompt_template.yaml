@@ -85,12 +85,44 @@ llm_retrieval_prompt:
       </query>
     </input>
 
-    Given the above list of FAQ entries and the user query, follow these steps to find the most appropriate answer:
+    Given the above list of FAQ entries and the user query, your task is to find the most appropriate answer by matching the query to the questions in the FAQ list. Here are two examples showing how to handle matching and non-matching cases:
+
+    Example 1 (Matching Case):
+    User Query: "정보 전송 요구 연장은 언제 가능한가요?"
+    FAQ List:
+    1. Q: "정보 전송 요구 연장은 언제 가능한가요?"
+      A: "마이데이터사업자는 고객이 지정한 개인신용정보 전송요구 기간 만료 시점 1개월 전부터 고객에게 개인신용정보 전송요구 기간 연장을 요청할 수 있습니다."
+
+    Correct Response:
+    <response>
+      <match_found>true</match_found>
+      <reasoning>
+        The user query "정보 전송 요구 연장은 언제 가능한가요?" exactly matches the question in the FAQ list. Both are asking about when it's possible to extend a data transmission request. Therefore, this FAQ entry is the most appropriate match for the user's query.
+      </reasoning>
+      <content>마이데이터사업자는 고객이 지정한 개인신용정보 전송요구 기간 만료 시점 1개월 전부터 고객에게 개인신용정보 전송요구 기간 연장을 요청할 수 있습니다.</content>
+    </response>
+
+    Example 2 (Non-Matching Case):
+    User Query: "정보 전송 요구 연장은 언제 가능한가요?"
+    FAQ List:
+    2. Q: "자격증명과 접근토큰의 차이가 무엇인지?"
+      A: "자격증명은 API 호출 시에 정보제공자와 마이데이터사업자간의 API 호출 자격을 인증하고 서로를 식별할 수 있도록 하는 것으로 종합포털이 정보제공자와 마이데이터 사업자에게 발급합니다. 반면 접근토큰은 마이데이터사업자가 개인신용정보 전송 요청 권한을 획득하기 위한 것으로 정보제공자가 마이데이터사업자에게 발급합니다. 접근토큰은 최대 유효기간이 1년이며 개인신용정보 전송 요구 변경･연장 시에 기발급된 접근 토큰을 폐기하고 재발급받아야 합니다."
+
+    Correct Response:
+    <response>
+      <match_found>false</match_found>
+      <reasoning>
+        The user query "정보 전송 요구 연장은 언제 가능한가요?" is asking about when it's possible to extend a data transmission request. However, the only FAQ entry in the list is about the difference between credentials and access tokens. This question does not match or relate closely to the user's query about extending data transmission requests. Therefore, there is no appropriate match in the given FAQ list.
+      </reasoning>
+      <content>null</content>
+    </response>
+
+    Now, follow these steps to find the most appropriate answer for the given query:
 
     1. Carefully analyze the user's query, identifying key terms and intent.
-    2. Compare the user's query with each question in the FAQ list. Look for semantic similarity, not just exact matches.
-    3. If you find a highly similar question in the FAQ list, return its corresponding answer.
-    4. If there's no highly similar question, look for partially matching questions that might provide relevant information.
+    2. Compare the user's query with each question in the FAQ list. Look for exact matches or high semantic similarity.
+    3. If you find a matching or highly similar question in the FAQ list, return its corresponding answer.
+    4. If there's no matching or highly similar question, return null. Do not return answers to questions that are not semantically similar to the user's query.
 
     Provide your response in the following XML format:
 
@@ -98,7 +130,7 @@ llm_retrieval_prompt:
       <match_found>true or false</match_found>
       <reasoning>
         Detailed explanation of why you chose this FAQ entry or why no match was found.
-        Include your comparison process and any partial matches you considered.
+        Include your comparison process and explain why other questions were not suitable.
       </reasoning>
       <content>
         The answer content of the chosen FAQ entry, or null if no match was found
@@ -108,6 +140,6 @@ llm_retrieval_prompt:
     Important notes:
     1. Ensure your response is in valid XML format without any additional markers or delimiters.
     2. The content of your response should be in Korean, matching the language of the FAQ answers.
-    3. Never return content that is completely unrelated to the query. If no relevant match is found, always return null.
-    4. Prioritize accuracy over providing an answer. It's better to return null than to provide incorrect information.
+    3. Never return content that is not directly related to the query. If no relevant match is found, always return null.
+    4. Prioritize accuracy over providing an answer. It's better to return null than to provide incorrect or unrelated information.
     5. Focus on matching the user's query with the questions in the FAQ list, not with the answers.

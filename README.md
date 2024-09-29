@@ -10,9 +10,11 @@
 2. **Evaluation 을 통한 성능 개선**: [Answer Semantic Similarity](https://docs.ragas.io/en/stable/concepts/metrics/semantic_similarity.html) 메트릭의 아이디어를 활용하여, 시스템의 성능을 평가하고 개선합니다.
 3. **LLM as a Retriever Model**: LLM(Language Model)을 검색 모델로 활용하여, 문서 검색을 수행합니다. LLM을 Retriever 로 활용한 이유는 [Mydata Agent 성능 개선 과정](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.vcc8mzumgf0r) 에서 확인할 수 있습니다.
 4. **Llamaparse 를 활용한 문서 파싱**: Llamaparse를 활용하여, 마이데이터 문서를 파싱하고, 문서 검색을 수행하였습니다. 관련 스크립트는 [여기](https://github.com/sjoonb/sj-kb-md-agent-scripts/blob/master/scripts/llamaparse_conversion/script.ipynb) 에서 확인할 수 있습니다.
-4. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
-5. **Multi-Turn 대화 지원**: 사용자와의 대화를 기억하고, 이전 대화를 바탕으로 답변을 생성합니다.
-6. **확장 가능한 프로젝트**: RAG 인터페이스를 활용하여, 다양한 구현체를 추가할 수 있습니다.
+5. **FAQ 기반의 답변 생성**: LLM as a Retriever 에 앞서, FAQ 문서를 활용하여 답변을 생성합니다. 일종의 캐시 역할을 하며, 유저 로그를 바탕으로 FAQ 문서를 업데이트할 수 있습니다.
+6. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
+7. **Multi-Turn 대화 지원**: 사용자와의 대화를 기억하고, 이전 대화를 바탕으로 답변을 생성합니다.
+8. **확장 가능한 프로젝트**: RAG 인터페이스를 활용하여, 다양한 구현체를 추가할 수 있습니다.
+
 
 ## Quick Demo
 
