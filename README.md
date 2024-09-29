@@ -64,7 +64,7 @@ streamlit run streamlit_app.py
 
 요구사항을 바탕으로 1차적으로 Claude 의 프로젝트 기능을 활용해 답변을 생성한 후, 문서를 살펴보며 적절한 답변예시를 작성하였습니다. 
 
-자세한 데이터 내용은 [Golden Dataset](./test/golden_dataset.yaml) 를 확인해주세요.
+자세한 데이터 내용은 [Golden Dataset](./golden_dataset.yaml) 를 확인해주세요.
 
 ### Run Evaluation
 
