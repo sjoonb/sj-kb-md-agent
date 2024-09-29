@@ -6,3 +6,10 @@ nltk
 ragas
 langchain
 llama-index-llms-langchain
+ipykernel
+PyPDF2
+matplotlib
+matplotlib-inline
+llama-index-core
+llama-parse
+llama-index-readers-file

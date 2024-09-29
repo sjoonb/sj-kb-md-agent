@@ -64,3 +64,5 @@ Thumbs.db
 rag_test_result.html
 index/*
 data/*
+
+.env

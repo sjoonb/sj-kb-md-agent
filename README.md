@@ -80,7 +80,7 @@ streamlit run streamlit_app.py
 ### Run Test
 
 ```bash  
-python src/rag_test.py
+python rag_test.py
 ```
 
 Example output:
@@ -88,16 +88,20 @@ Example output:
 Threshold for Answer Correctness: 0.75
 
 Test Case 1:
-Question: API 스펙 중 aNS는 어떤 것을 뜻하나요?
-Expected Answer: API 스펙에서 aNS는 다음을 의미합니다: ~~
-Generated Answer: API 스펙에서 aNS는 다음을 의미합니다: ~~
-Score (Answer Correctness): 0.9
+Question: x-api-tran-id에 대해 알려주세요.
+Expected Answer: x-api-tran-id는 API를 송수신한 기관 간 거래추적이 필요한 경우(예: 민원대응, 장애처리 등) 거래를 식별하기 위한 거래고유번호입니다. 이 값은 HTTP 요청 및 응답 헤더에 설정됩니다.
+
+Generated Answer: "x-api-tran-id"는 API를 송수신한 기관 간 거래추적이 필요(민원대응, 장애처리 등)한 경우 거래를 식별하기 위한 거래고유번호로 HTTP 요청 및 응답 헤더에 값을 설정하는 것입니다.
+Score (Answer Correctness): 1.00
+Reason: 생성된 답변은 예상 답변의 핵심 정보를 모두 포함하고 있으며, 의미도 정확히 일치합니다. 또한 정보의 정확성 측면에서도 예상 답변과 동일한 내용을 전달하고 있습니다. 따라서 모든 평가 기준을 충족하므로 최고 점수를 부여할 수 있습니다.
 Result: PASSED
 
 Test Case 2:
-Question:  x-api-tran-id에 대해 알려주세요.
-Expected Answer: x-api-tran-id는 API 요청에 대한 고유한 식별자로, 요청과 응답 간의 관계를 추적하는 데 사용됩니다.
-Generated Answer: 죄송합니다. 관련된 문서를 찾을 수 없습니다.
-Score (Answer Correctness): 0.331
+Question: API 스펙 중 aNS는 어떤 것을 뜻하나요?
+Expected Answer: aNS는 알파벳, 숫자 및 특수기호 조합을 의미합니다. 
+
+Generated Answer: API 스펙 중 aNS는 "다음 페이지 요청을 위한 기준개체"를 의미합니다. 요청 파라미터 규격에서 "next_page*"의 타입으로 aNS (1000)으로 정의되어 있으며, 응답에서도 "next_page*"가 aNS (1000)으로 나타납니다.
+Score (Answer Correctness): 0.00
+Reason: 생성된 답변은 예상 답변과 전혀 다른 정보를 제공하고 있습니다. 예상 답변에서는 aNS가 "알파벳, 숫자 및 특수기호 조합"을 의미한다고 설명하고 있지만, 생성된 답변에서는 aNS가 "다음 페이지 요청을 위한 기준개체"를 의미한다고 설명하고 있습니다. 따라서 내용의 유사성, 의미의 일치성, 정보의 정확성 모두에서 일치하지 않습니다.
 Result: FAILED
 ```

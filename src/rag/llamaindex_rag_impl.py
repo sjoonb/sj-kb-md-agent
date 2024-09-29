@@ -1,11 +1,15 @@
 import logging
 from typing import Sequence
 
-import yaml
-from llama_index.core import (PromptTemplate, Settings, SimpleDirectoryReader,
-                              StorageContext, VectorStoreIndex,
-                              get_response_synthesizer,
-                              load_index_from_storage)
+from llama_index.core import (
+    PromptTemplate,
+    Settings,
+    SimpleDirectoryReader,
+    StorageContext,
+    VectorStoreIndex,
+    get_response_synthesizer,
+    load_index_from_storage,
+)
 from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import VectorIndexRetriever
@@ -15,17 +19,27 @@ from llama_index.llms.openai import OpenAI
 from src.rag.interfaces import IRAG
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
+
 class LlamaIndexRAGImpl(IRAG):
-    def __init__(self, input_dir="./data", index_dir="./index", model_name="gpt-3.5-turbo"):
+    def __init__(
+        self,
+        input_dir="./src/rag/llamaindex_rag_resource/data",
+        index_dir="./src/rag/llamaindex_rag_resource/index",
+        model_name="gpt-3.5-turbo",
+    ):
         self.input_dir = input_dir
         self.index_dir = index_dir
         self.model_name = model_name
         self.index = None
         self.query_engine = None
-        logger.info(f"RAG initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}")
+        logger.info(
+            f"RAG initialized with input_dir={input_dir}, index_dir={index_dir}, model_name={model_name}"
+        )
 
         self._initialize_rag()
 
@@ -41,7 +55,9 @@ class LlamaIndexRAGImpl(IRAG):
         if not self.query_engine:
             logger.error("RAG System not initialized. Call initialize() first.")
             raise ValueError("RAG System not initialized. Call initialize() first.")
-        logger.info(f"Querying RAG System with prompt: {prompt[:50]}...")  # Log first 50 chars of prompt for brevity
+        logger.info(
+            f"Querying RAG System with prompt: {prompt[:50]}..."
+        )  # Log first 50 chars of prompt for brevity
         response = self.query_engine.query(prompt)
 
         source_nodes = response.source_nodes
@@ -49,16 +65,16 @@ class LlamaIndexRAGImpl(IRAG):
             node = node_with_score.node
             metadata = node.metadata
             text_content = node.text
-            
+
             # Print metadata
             print("Document Metadata:")
             for key, value in metadata.items():
                 print(f"{key}: {value}")
-            
+
             # Print a snippet of the document's content
             print("\nDocument Content Snippet:")
             print(text_content[:500])  # Print the first 500 characters of the content
-            print() 
+            print()
 
         logger.info("Query completed successfully.")
         return response.response
@@ -81,7 +97,9 @@ class LlamaIndexRAGImpl(IRAG):
             self.index = self._load_existing_index()
             logger.info("Existing index loaded successfully.")
         except Exception as e:
-            logger.warning(f"Failed to load existing index: {str(e)}. Building new index...")
+            logger.warning(
+                f"Failed to load existing index: {str(e)}. Building new index..."
+            )
             docs = self._load_documents()
             self.index = self._build_index(docs)
             self._store_index()
@@ -107,11 +125,11 @@ class LlamaIndexRAGImpl(IRAG):
 
     def _create_retriever(self):
         logger.info("Creating retriever...")
-        self. retriever = VectorIndexRetriever(
+        self.retriever = VectorIndexRetriever(
             index=self.index,
             similarity_top_k=10,
         )
-    
+
     def _create_query_engine(self):
         # assemble query engine
         self.query_engine = RetrieverQueryEngine(
@@ -122,8 +140,10 @@ class LlamaIndexRAGImpl(IRAG):
 
         # self.query_engine = self.index.as_query_engine(llm=None, verbose=True)
         self.query_engine.update_prompts(
-            {"response_synthesizer:text_qa_template":
-              PromptTemplate(self._load_prompt_template('llamaindex_prompt'))
+            {
+                "response_synthesizer:text_qa_template": PromptTemplate(
+                    self._load_prompt_template("llamaindex_prompt")
+                )
             }
         )
 

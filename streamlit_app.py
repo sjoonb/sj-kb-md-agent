@@ -10,21 +10,27 @@ st.header("Chat with the Streamlit docs 💬 📚")
 # Initialize message history
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me a question about Streamlit's open-source Python library!"}
+        {
+            "role": "assistant",
+            "content": "Ask me a question about Streamlit's open-source Python library!",
+        }
     ]
 
-rag_type = st.sidebar.selectbox("Choose RAG Implementation", ["LlamaIndex", "LangChain"])
+rag_type = st.sidebar.selectbox(
+    "Choose RAG Implementation", ["LlamaIndex", "LangChain"]
+)
+
 
 @st.cache_resource(show_spinner=False)
 def initialize_rag():
     if rag_type == "LlamaIndex":
-        rag_impl = LlamaIndexRAGImpl(input_dir="./data")
+        rag_impl = LlamaIndexRAGImpl()
     else:
         # TODO
         pass
-    
-    rag_impl.initialize()
+
     return rag_impl
+
 
 rag_impl = initialize_rag()
 
