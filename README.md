@@ -68,7 +68,7 @@ export OPENAI_API_KEY=YOUR_OPEN_AI_API_KEY
 set OPENAI_API_KEY=YOUR_OPEN_AI_API_KEY
 ```
 
-### Run the Application
+## Run the Application
 
 ```bash
 streamlit run streamlit_app.py
