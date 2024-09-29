@@ -2,35 +2,38 @@ import streamlit as st
 import openai
 from src.rag.llm_retriever_rag_impl import LlmRetrieverRAGImpl
 
-# Initialize OpenAI API key
-openai.api_key = st.secrets.openai_key
-
-st.header("Chat with the Streamlit docs 💬 📚")
+st.header("마이데이터 에이전트 🤖")
 
 # Initialize message history
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Ask me a question about Streamlit's open-source Python library!",
+            "content": "마이데이터 공식 문서를 기반으로, 정책과 기술 사양 등을 답변할 수 있습니다.",
         }
     ]
 
 rag_impl = LlmRetrieverRAGImpl()
 
-# Prompt for user input and display message history
-if prompt := st.chat_input("Your question"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
+# Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.write(message["content"])
+        st.markdown(message["content"])
 
-# Pass query to RAG system and display response
-if st.session_state.messages[-1]["role"] != "assistant":
+if prompt := st.chat_input("What is your message?"):
+    st.chat_message("user").markdown(prompt)
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
+        response_placeholder = st.empty()
+        
+        with st.spinner("AI is thinking..."):
             response = rag_impl.query(prompt)
-            st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)
+        
+        response_placeholder.markdown(response)
+    
+    st.session_state.messages.append({"role": "assistant", "content": response})

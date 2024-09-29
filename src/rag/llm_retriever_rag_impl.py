@@ -21,8 +21,27 @@ class LlmRetrieverRAGImpl(IRAG):
     def query(self, query: str):
         logger.info(f"Querying LLM Retriever RAG System with prompt: {query[:50]}...")
         document = self._retrieve_document(query)
-        response = self.generation_chain.invoke({"document": document, "query": query})
+        if not document["content"]:
+            return self._generate_feedback_response(document.get("feedback", {}))
+
+        response = self.generation_chain.invoke({"document": document["content"], "query": query})
         return response.content
+    
+    def _generate_feedback_response(self, feedback: dict) -> str:
+        response = "관련된 문서를 찾을 수 없습니다.\n\n"
+        print("feedback: ", feedback)
+        
+        clarification = feedback.get("clarification_request", "")
+        if clarification:
+            response += f"{clarification}\n\n"
+        
+        related_queries = feedback.get("related_queries", [])
+        if related_queries:
+            response += "관련 질문 제안:\n"
+            for i, rq in enumerate(related_queries, 1):
+                response += f"{i}. {rq}\n"
+        
+        return response
 
     def __init__(self):
         self._initialize_retrieval_chain()
@@ -57,13 +76,24 @@ class LlmRetrieverRAGImpl(IRAG):
             root = ET.fromstring(cleaned_response)
             reasoning = root.find("reasoning").text.strip()
             file_name = root.find("file_name").text.strip()
-            return {
+            result = {
                 "reasoning": reasoning,
                 "file_name": file_name if file_name.lower() != "null" else None,
             }
+            
+            # Parse feedback if file_name is null
+            if result["file_name"] is None:
+                feedback_elem = root.find("feedback")
+                if feedback_elem is not None:
+                    result["feedback"] = {
+                        "clarification_request": feedback_elem.find("clarification_request").text.strip(),
+                        "related_queries": [query.text.strip() for query in feedback_elem.findall("related_queries/query")]
+                    }
+            
+            return result
         except ET.ParseError as e:
-            print(f"Error parsing LLM response: {e}")
-            print(f"Raw response: {response.content}")
+            logger.error(f"Error parsing LLM response: {e}")
+            logger.error(f"Raw response: {response.content}")
             return {"reasoning": "Error parsing LLM response", "file_name": None}
 
     def _retrieve_document(self, query):
@@ -74,6 +104,8 @@ class LlmRetrieverRAGImpl(IRAG):
             result["content"] = md_content
         else:
             result["content"] = None
+            if "feedback" in result:
+                result["feedback"] = result["feedback"]
 
         return result
 
