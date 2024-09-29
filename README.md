@@ -54,7 +54,7 @@ https://sjoonb-kakaobank-ai.streamlit.app/
    ```
 ### OpenAI API Key 설정
 
-RAG 시스템의 Generation 단계와, 시스템 성능 평가 과정에서 OpenAI의 모델을 활용합니다. 이에 따라 환경변수에 다음과 같이 키를 저장해야 합니다.
+RAG 동작과 Evaluation 과정 모두에서 OpenAI의 모델을 활용합니다. 이에 따라 환경변수에 다음과 같이 키를 저장해야 합니다.
 
 ### macOS/Linux
 
