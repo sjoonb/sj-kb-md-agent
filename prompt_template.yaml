@@ -64,7 +64,7 @@ llm_retrieval_prompt:
       </file_name>
       <feedback>
         <clarification_request>
-          질문에 대해 더 구체적인 정보를 제공해 주실 수 있나요? 예를 들어, [사용 가능한 매뉴얼들을 기반으로 질문을 더 구체화할 수 있는 방법 제안]
+          질문에 대해 더 구체적인 정보를 제공해 주실 수 있나요? 
         </clarification_request>
         <related_queries>
           <query>사용 가능한 매뉴얼들을 기반으로 한 관련 질문 제안 1</query>
