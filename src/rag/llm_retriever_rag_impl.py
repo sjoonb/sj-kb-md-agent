@@ -1,9 +1,11 @@
 import logging
 import os
 import xml.etree.ElementTree as ET
+
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain_openai import ChatOpenAI
+
 from src.rag.interfaces import IRAG
 
 # Configure logging
@@ -12,7 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-_LLM_RETRIEVER_RAG_DOCS_DIR = "./src/rag/llm_retrieval_rag_resource/docs"
+_LLM_RETRIEVER_RAG_DOCS_DIR = "./src/rag/llm_retriever_rag_resource/docs"
 
 
 class LlmRetrieverRAGImpl(IRAG):
@@ -45,11 +47,7 @@ class LlmRetrieverRAGImpl(IRAG):
         )
 
     def _get_md_file_list(self):
-        return [
-            f
-            for f in os.listdir(_LLM_RETRIEVER_RAG_DOCS_DIR)
-            if f.endswith(".md")
-        ]
+        return [f for f in os.listdir(_LLM_RETRIEVER_RAG_DOCS_DIR) if f.endswith(".md")]
 
     def _parse_llm_response(self, response):
         logger.info(f"Raw LLM response\n: {response.content}")
@@ -70,24 +68,26 @@ class LlmRetrieverRAGImpl(IRAG):
 
     def _retrieve_document(self, query):
         result = self.retrieval_chain.invoke({"query": query})
-        if result['file_name'] and result['file_name'].lower() != 'null':
-            
-            md_content = self._load_md_content(result['file_name'])
-            result['content'] = md_content
+        if result["file_name"] and result["file_name"].lower() != "null":
+
+            md_content = self._load_md_content(result["file_name"])
+            result["content"] = md_content
         else:
-            result['content'] = None
-        
+            result["content"] = None
+
         return result
 
     def _load_md_content(self, file_name):
         file_path = os.path.join(_LLM_RETRIEVER_RAG_DOCS_DIR, file_name)
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
 
     def _initialize_generation_chain(self):
         self.generation_prompt = PromptTemplate(
             input_variables=["document", "query"],
-            template=self._load_prompt_template("llm_retrieval_prompt", "generation_template"),
+            template=self._load_prompt_template(
+                "llm_retrieval_prompt", "generation_template"
+            ),
         )
         self.generation_chain = (
             {"document": RunnablePassthrough(), "query": RunnablePassthrough()}
