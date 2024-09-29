@@ -7,7 +7,7 @@
 이는, 다음과 같은 특징을 가지고 있습니다.
 
 1. **RAG 기반의 대화형 AI 시스템**: RAG(Retrieval-Augmented Generation)를 활용하여, 문서 검색과 생성을 통해 답변을 생성합니다.
-2. **Evaluation 을 통한 성능 개선**: [Answer Semantic Similarity](https://docs.ragas.io/en/stable/concepts/metrics/semantic_similarity.html) 메트릭의 컨셉을 활용하여, 시스템의 성능을 평가하고 개선합니다.
+2. **Evaluation 을 통한 성능 개선**: [Answer Semantic Similarity](https://docs.ragas.io/en/stable/concepts/metrics/semantic_similarity.html) 메트릭의 아이디어를 활용하여, 시스템의 성능을 평가하고 개선합니다.
 3. **LLM as a Retriever Model**: LLM(Language Model)을 검색 모델로 활용하여, 문서 검색을 수행합니다. LLM을 Retriever 로 활용한 이유는 [Mydata Agent 성능 개선 과정](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.vcc8mzumgf0r) 에서 확인할 수 있습니다.
 4. **Llamaparse 를 활용한 문서 파싱**: Llamaparse를 활용하여, 마이데이터 문서를 파싱하고, 문서 검색을 수행하였습니다. 관련 스크립트는 [여기](https://github.com/sjoonb/sj-kb-md-agent-scripts/blob/master/scripts/llamaparse_conversion/script.ipynb) 에서 확인할 수 있습니다.
 4. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
