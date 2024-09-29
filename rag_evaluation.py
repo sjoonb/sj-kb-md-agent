@@ -9,8 +9,7 @@ from src.rag.llm_retriever_rag_impl import LlmRetrieverRAGImpl
 # Initialize colorama
 init(autoreset=True)
 
-# Define the correctness threshold
-ANSWER_CORRECTNESS_THRESHOLD = 0.75
+ANSWER_SIMILARITY_THRESHOLD = 0.75
 
 def load_test_dataset(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -53,7 +52,7 @@ def parse_evaluation_result(result):
 
 def evaluate_results(results, threshold):
     print("\n--- Test Results ---\n")
-    print(f"Threshold for Answer Correctness: " + Fore.GREEN + f"{threshold:.2f}\n")
+    print(f"Threshold for Answer Semantic Similarity: " + Fore.GREEN + f"{threshold:.2f}\n")
     
     for idx, result in enumerate(results):
         print(f"Test Case {idx + 1}:")
@@ -62,7 +61,7 @@ def evaluate_results(results, threshold):
         print(f"Generated Answer: {result['generated_answer']}")
         
         score_color = Fore.GREEN if result['score'] >= threshold else Fore.RED
-        print(f"Score (Answer Correctness): {score_color}{result['score']:.2f}{Fore.RESET}")
+        print(f"Score (Answer Semantic Similarity): {score_color}{result['score']:.2f}{Fore.RESET}")
         print(f"Reason: {result['reason']}")
         
         result_text = "PASSED" if result['score'] >= threshold else "FAILED"
@@ -94,7 +93,7 @@ def test_rag(rag: IRAG):
             "reason": reason
         })
 
-    evaluate_results(results, ANSWER_CORRECTNESS_THRESHOLD)
+    evaluate_results(results, ANSWER_SIMILARITY_THRESHOLD)
 
 if __name__ == "__main__":
     rag_implementations = [LlmRetrieverRAGImpl()]

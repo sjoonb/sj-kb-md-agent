@@ -7,10 +7,11 @@
 다음과 같은 특징을 가지고 있습니다.
 
 1. **RAG 기반의 대화형 AI 시스템**: RAG(Retrieval-Augmented Generation)를 활용하여, 문서 검색과 생성을 통해 답변을 생성합니다.
-2. **LLM as a Retriever Model**: LLM(Language Model)을 검색 모델로 활용하여, 문서 검색을 수행합니다. LLM을 Retriever 로 활용한 이유는 [Mydata Agent 성능 개선 과정](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.vcc8mzumgf0r) 에서 확인할 수 있습니다.
-2. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
-3. **Multi-Turn 대화 지원**: 사용자와의 대화를 기억하고, 이전 대화를 바탕으로 답변을 생성합니다.
-4. **확장 가능한 프로젝트**: RAG 인터페이스를 활용하여, 다양한 구현체를 추가할 수 있습니다.
+2. **Evaluation 을 통한 성능 개선**: Answer Semantic Similarity 메트릭을 활용하여, 시스템의 성능을 평가하고 개선합니다.
+3. **LLM as a Retriever Model**: LLM(Language Model)을 검색 모델로 활용하여, 문서 검색을 수행합니다. LLM을 Retriever 로 활용한 이유는 [Mydata Agent 성능 개선 과정](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.vcc8mzumgf0r) 에서 확인할 수 있습니다.
+4. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
+5. **Multi-Turn 대화 지원**: 사용자와의 대화를 기억하고, 이전 대화를 바탕으로 답변을 생성합니다.
+6. **확장 가능한 프로젝트**: RAG 인터페이스를 활용하여, 다양한 구현체를 추가할 수 있습니다.
 
 ## Quick Demo
 
@@ -70,7 +71,7 @@ streamlit run streamlit_app.py
 
 ### Metric
 
-시스템의 성능을 평가하기 위한 메트릭으로, Answer Correctness 를 활용합니다. 
+시스템의 성능을 평가하기 위한 메트릭으로, Answer Semantic Similarity 를 활용합니다. 
 
 이는, 생성된 답변과 정답의 유사성을 평가하는 메트릭으로, 0 ~ 1 사이의 점수로 표현됩니다. 높은 점수는 생성된 답변과 정답의 유사성이 높음을 의미하며, 더 나은 정확성을 나타냅니다.
 
@@ -88,14 +89,14 @@ python rag_evaluation.py
 
 Example output:
 ```bash
-Threshold for Answer Correctness: 0.75
+Threshold for Answer Semantic Similarity: 0.75
 
 Test Case 1:
 Question: x-api-tran-id에 대해 알려주세요.
 Expected Answer: x-api-tran-id는 API를 송수신한 기관 간 거래추적이 필요한 경우(예: 민원대응, 장애처리 등) 거래를 식별하기 위한 거래고유번호입니다. 이 값은 HTTP 요청 및 응답 헤더에 설정됩니다.
 
 Generated Answer: "x-api-tran-id"는 API를 송수신한 기관 간 거래추적이 필요(민원대응, 장애처리 등)한 경우 거래를 식별하기 위한 거래고유번호로 HTTP 요청 및 응답 헤더에 값을 설정하는 것입니다.
-Score (Answer Correctness): 1.00
+Score (Answer Semantic Similarity): 1.00
 Reason: 생성된 답변은 예상 답변의 핵심 정보를 모두 포함하고 있으며, 의미도 정확히 일치합니다. 또한 정보의 정확성 측면에서도 예상 답변과 동일한 내용을 전달하고 있습니다. 따라서 모든 평가 기준을 충족하므로 최고 점수를 부여할 수 있습니다.
 Result: PASSED
 
@@ -104,7 +105,7 @@ Question: API 스펙 중 aNS는 어떤 것을 뜻하나요?
 Expected Answer: aNS는 알파벳, 숫자 및 특수기호 조합을 의미합니다. 
 
 Generated Answer: API 스펙 중 aNS는 "다음 페이지 요청을 위한 기준개체"를 의미합니다. 요청 파라미터 규격에서 "next_page*"의 타입으로 aNS (1000)으로 정의되어 있으며, 응답에서도 "next_page*"가 aNS (1000)으로 나타납니다.
-Score (Answer Correctness): 0.00
+Score (Answer Semantic Similarity): 0.00
 Reason: 생성된 답변은 예상 답변과 전혀 다른 정보를 제공하고 있습니다. 예상 답변에서는 aNS가 "알파벳, 숫자 및 특수기호 조합"을 의미한다고 설명하고 있지만, 생성된 답변에서는 aNS가 "다음 페이지 요청을 위한 기준개체"를 의미한다고 설명하고 있습니다. 따라서 내용의 유사성, 의미의 일치성, 정보의 정확성 모두에서 일치하지 않습니다.
 Result: FAILED
 ```
