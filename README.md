@@ -3,7 +3,7 @@
 ## Quick Demo
 
 ### Demo URL
-[TBU]
+https://sjoonb-kakaobank-ai.streamlit.app/
 
 ## Setup and Installation
 
