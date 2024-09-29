@@ -19,6 +19,9 @@
 ### Demo URL
 https://sjoonb-kakaobank-ai.streamlit.app/
 
+### Demo Video
+[![데모영상](https://img.youtube.com/vi/9dspD8f4jG4/0.jpg)](https://youtu.be/9dspD8f4jG4)
+
 ## Setup and Installation
 
 ### Requirements
