@@ -1,5 +1,17 @@
 # sj-kb-md-agent
 
+## Description
+
+마이데이터 공식 문서를 기반으로 정책과 기술 사양 등을 답변해주는 에이전트 시스템입니다.
+
+다음과 같은 특징을 가지고 있습니다.
+
+1. **RAG 기반의 대화형 AI 시스템**: RAG(Retrieval-Augmented Generation)를 활용하여, 문서 검색과 생성을 통해 답변을 생성합니다.
+2. **LLM as a Retriever Model**: LLM(Language Model)을 검색 모델로 활용하여, 문서 검색을 수행합니다. LLM을 Retriever 로 활용한 이유는 [Mydata Agent 성능 개선 과정](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.vcc8mzumgf0r) 에서 확인할 수 있습니다.
+2. **Streamlit을 활용한 대화형 인터페이스**: Streamlit을 활용하여, 사용자와의 상호작용을 통해 답변을 생성합니다.
+3. **Multi-Turn 대화 지원**: 사용자와의 대화를 기억하고, 이전 대화를 바탕으로 답변을 생성합니다.
+4. **확장 가능한 프로젝트**: RAG 인터페이스를 활용하여, 다양한 구현체를 추가할 수 있습니다.
+
 ## Quick Demo
 
 ### Demo URL
@@ -52,11 +64,13 @@ streamlit run streamlit_app.py
 시스템의 최소한의 품질 유지와 지속적인 성능 개선을 위해선 적절한 성능 검증이 요구됩니다.
 그러나, LLM 모델의 특성상 일반적인 rull-based 기반의 테스트 방법론을 적용하기 어렵습니다.
 
-이를 해결하기 위해, [RAGAS](https://docs.ragas.io/en/stable/index.html) 프레임워크를 활용하여 테스트 환경을 구성하였습니다. RAGAS는 LLM을 에이전트로 활용하여 RAG 파이프라인의 성능을 평가하고, 지속적인 학습을 통해 성능을 개선할 수 있도록 돕는 평가 프레임워크입니다.
+~~이를 해결하기 위해, [RAGAS](https://docs.ragas.io/en/stable/index.html) 프레임워크를 활용하여 테스트 환경을 구성하였습니다. RAGAS는 LLM을 에이전트로 활용하여 RAG 파이프라인의 성능을 평가하고, 지속적인 학습을 통해 성능을 개선할 수 있도록 돕는 평가 프레임워크입니다.~~
+
+-> 초기에는 RAGAS 프레임워크를 활용하여 성능 평가를 진행하였으나, 성능 개선 과정에서 [RAGAS 프레임워크에 한계](https://docs.google.com/document/d/1q9gKyl-IDP3CFUIDIIaUyRQb-VLyksxnuSui0mc5qCQ/edit#heading=h.lc9j5ns8u2gh)를 발견하여, 직접 평가 프로세스를 구성하였습니다. 평가 프롬프트는 [여기](https://github.com/sjoonb/sj-kb-md-agent/blob/master/rag_evaluation.py#L20) 에서 확인하실 수 있습니다
 
 ### Metric
 
-시스템의 성능을 평가하기 위한 메트릭으로, [Answer Correctness](https://docs.ragas.io/en/stable/concepts/metrics/answer_correctness.html) 를 활용합니다. 
+시스템의 성능을 평가하기 위한 메트릭으로, Answer Correctness 를 활용합니다. 
 
 이는, 생성된 답변과 정답의 유사성을 평가하는 메트릭으로, 0 ~ 1 사이의 점수로 표현됩니다. 높은 점수는 생성된 답변과 정답의 유사성이 높음을 의미하며, 더 나은 정확성을 나타냅니다.
 
