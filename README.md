@@ -58,9 +58,9 @@ RAG 시스템의 Generation 단계와, 시스템 성능 평가 과정에서 Open
 streamlit run streamlit_app.py
 ```
 
-## Test
+## Evaluation
 
-시스템의 최소한의 품질 유지와 지속적인 성능 개선을 위해선 적절한 테스트가 요구됩니다.
+시스템의 최소한의 품질 유지와 지속적인 성능 개선을 위해선 적절한 성능 검증이 요구됩니다.
 그러나, LLM 모델의 특성상 일반적인 rull-based 기반의 테스트 방법론을 적용하기 어렵습니다.
 
 이를 해결하기 위해, [RAGAS](https://docs.ragas.io/en/stable/index.html) 프레임워크를 활용하여 테스트 환경을 구성하였습니다. RAGAS는 LLM을 에이전트로 활용하여 RAG 파이프라인의 성능을 평가하고, 지속적인 학습을 통해 성능을 개선할 수 있도록 돕는 평가 프레임워크입니다.
@@ -77,10 +77,10 @@ streamlit run streamlit_app.py
 
 자세한 데이터 내용은 [Golden Dataset](./test/golden_dataset.yaml) 를 확인해주세요.
 
-### Run Test
+### Run Evaluation
 
 ```bash  
-python rag_test.py
+python rag_evaluation.py
 ```
 
 Example output:
